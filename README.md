@@ -54,12 +54,14 @@ Although I'm open to having a default of the zappa `s3_bucket` if others feel th
 from flask import Flask, render_template_string
 from flask_sqlalchemy import SQLAlchemy
 from flask_user import login_required, UserManager, UserMixin
+from flask_user import SQLAlchemyAdapter
 
 # Much better to set this via some other mechanism, but this keeps all
 #  the settings in this one file
 import os
 os.environ['S3SQLite_bucket'] = 'MyBucketName'
 
+# this is the important change, it imports sqlalchemy-s3sqlite at runtime
 from sqlalchemy.dialects import registry
 registry.register("s3sqlite", "sqlalchemy-s3sqlite.dialect", "S3SQLiteDialect")
 
@@ -112,7 +114,8 @@ def create_app():
     db.create_all()
 
     # Setup Flask-User and specify the User data-model
-    user_manager = UserManager(app, db, User)
+    db_adapter = SQLAlchemyAdapter(db, User)        # Register the User model
+    user_manager = UserManager(db_adapter, app)     # Initialize Flask-User
 
     # The Home page is accessible to anyone
     @app.route('/')
@@ -168,5 +171,4 @@ Consistent with the equivalent django code, it assumes databases which are expli
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 's3sqlite:////tmp/quickstart_app.sqlite')
 ```
 would not be persisted. However this seems a bit silly since the s3sqlite dialect was explicitly stated. In time it may be worthwhile if this supports the other approaches shown at https://github.com/hkwi/sqlalchemy_gevent
-
 
