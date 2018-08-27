@@ -15,25 +15,26 @@ install the module
 
 
 teach sqlite about s3sqlite 
-```
+```python
 from sqlalchemy.dialects import registry
 registry.register("s3sqlite", "sqlalchemy-s3sqlite.dialect", "S3SQLiteDialect")
 ```
 
 and change your SQLALCHEMY_DATABASE_URI
-```
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 's3sqlite:///quickstart_app.sqlite')
+```python
+SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 's3sqlite:///quickstart_app.sqlite')
 ```
 
 At the moment it remains dependent on an environment variable
 `S3SQLite_bucket`
 to know where to persist the sqlite database. For zappa users, this can be achieved with
 
-```
-    "dev": {
-        "environment_variables": {
-            "S3SQLite_bucket": "mybucketname123"
-        }
+```js
+"dev": {
+    "environment_variables": {
+        "S3SQLite_bucket": "mybucketname123"
+    }
+}
 ````
 Although I'm open to having a default of the zappa `s3_bucket` if others feel that's a worthwhile improvement. 
 
@@ -44,7 +45,7 @@ Although I'm open to having a default of the zappa `s3_bucket` if others feel th
 
 # Working Example
 
-```
+```python
 # This file contains an example Flask-User application.
 # To keep the example simple, we are applying some unusual techniques:
 # - Placing everything in one file
@@ -161,14 +162,11 @@ if __name__=='__main__':
 ```
 
 
-
-
-
 # Warnings and future directions
 
 Consistent with the equivalent django code, it assumes databases which are explicitly stored below /tmp/ (or more accurately in a path containing '/tmp/' !) should not be persisted, so
-```
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 's3sqlite:////tmp/quickstart_app.sqlite')
+```python
+SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 's3sqlite:////tmp/quickstart_app.sqlite')
 ```
 would not be persisted. However this seems a bit silly since the s3sqlite dialect was explicitly stated. In time it may be worthwhile if this supports the other approaches shown at https://github.com/hkwi/sqlalchemy_gevent
 
