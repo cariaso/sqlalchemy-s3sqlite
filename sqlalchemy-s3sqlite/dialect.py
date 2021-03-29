@@ -107,7 +107,7 @@ class S3SQLiteDialect(SQLiteDialect_pysqlite):
                 )
 
                 s3_object = s3.Object(bucketname, self._remote_dbname)
-                result = s3_object.put('rb', Body=bytesIO)
+                result = s3_object.put(Body=bytesIO)
                 logging.debug("Saved to remote DB!")
         except Exception as e:
             logging.debug(e)
